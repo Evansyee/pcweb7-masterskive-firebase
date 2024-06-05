@@ -38,11 +38,21 @@ export default function LoginPage() {
                     />
                     <a href="/signup">Sign up for an account</a>
                 </Form.Group>
-                <Button variant="primary" onClick={async (e) => { }}>
+                <Button variant="primary" onClick={async (e) => {
+                    setError("");
+                    const canLogin = username && password;
+                    if (canLogin)
+                        try {
+                            await signInWithEmailAndPassword(auth, username, password);
+                            navigate("/");
+                        } catch (error) {
+                            setError(error.message);
+                        }
+                }}>
                     Login
                 </Button>
             </Form>
-            <p></p>
+            <p>(error)</p>
         </Container>
     );
 }
