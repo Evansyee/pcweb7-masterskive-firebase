@@ -13,9 +13,9 @@ export default function PostPageHome() {
         const filteredPosts = query.docs.filter(doc => {
             const data = doc.data();
             const startDate = new Date(data.startDate);
-            startDate.setHours(0, 0, 0, 0);
+            startDate.setHours(0, 0, 0, 0); //start of the day 
             const endDate = new Date(data.endDate);
-            endDate.setHours(23, 59, 59, 999);  // Use 999 for milliseconds for the end of the day
+            endDate.setHours(23, 59, 59, 999);  // end of the day
             const currentDate = new Date();
             return currentDate >= startDate && currentDate <= endDate;
         }).map(doc => ({ id: doc.id, ...doc.data() })); // Map to include document ID and data
