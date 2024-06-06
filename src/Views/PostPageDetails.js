@@ -1,48 +1,123 @@
 import React, { useEffect, useState } from "react";
-import { Card, Col, Container, Image, Nav, Navbar, Row } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { Button, Card, Col, Container, Form, Nav, Navbar, Row } from "react-bootstrap";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useNavigate, useParams } from "react-router-dom";
+import { auth, db } from "../firebase";
+import { signOut } from "firebase/auth";
+import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 
 export default function PostPageDetails() {
-  const [caption, setCaption] = useState("");
-  const [image, setImage] = useState("");
+  const [userID, setUserID] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [reason, setReason] = useState("");
+  const [error, setError] = useState("");
   const params = useParams();
   const id = params.id;
+  const [user, loading] = useAuthState(auth);
+  const navigate = useNavigate();
 
-  async function deletePost(id) {}
+  async function deletePost(id) {
+    await deleteDoc(doc(db, "leaveEntries", id));
+    navigate("/");
+  }
 
   async function getPost(id) {
-    setCaption("");
-    setImage("");
+    const postDocument = await getDoc(doc(db, "leaveEntries", id));
+    const post = postDocument.data();
+    setUserID(post.userID);
+    setStartDate(post.startDate);
+    setEndDate(post.endDate);
+    setReason(post.reason);
+  }
+
+  async function updatePost(id) {
+    if (new Date(endDate) < new Date(startDate)) {
+      alert("End date must be the same or later than the start date.");
+      return;
+    }
+
+    await updateDoc(doc(db, "leaveEntries", id), {
+      userID,
+      startDate,
+      endDate,
+      reason,
+      timeStamp: new Date().toISOString(),
+    });
+
+    navigate("/");
   }
 
   useEffect(() => {
+    if (loading) return;
+    if (!user) navigate("/login");
     getPost(id);
-  }, [id]);
+  }, [id, navigate, user, loading]);
 
   return (
     <>
       <Navbar variant="light" bg="light">
         <Container>
-          <Navbar.Brand href="/">Tinkergram</Navbar.Brand>
+          <Navbar.Brand href="/">MasterSkive</Navbar.Brand>
           <Nav>
-            <Nav.Link href="/add">New Post</Nav.Link>
-            <Nav.Link href="/add">🚪</Nav.Link>
+            <Nav.Link href="/add">New Leave Request</Nav.Link>
+            <Nav.Link onClick={(e) => signOut(auth)}>🚪</Nav.Link>
           </Nav>
         </Container>
       </Navbar>
       <Container>
         <Row style={{ marginTop: "2rem" }}>
-          <Col md="6">
-            <Image src={image} style={{ width: "100%" }} />
-          </Col>
           <Col>
             <Card>
               <Card.Body>
-                <Card.Text>{caption}</Card.Text>
-                <Card.Link href={`/update/${id}`}>Edit</Card.Link>
+                <Form>
+                  <Form.Group className="mb-3" controlId="userName">
+                    <Form.Label>User Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter your name"
+                      value={userID}
+                      onChange={(e) => setUserID(e.target.value)}
+                    />
+                  </Form.Group>
+
+                  <Form.Group className="mb-3" controlId="startDate">
+                    <Form.Label>Start Date</Form.Label>
+                    <Form.Control
+                      type="date"
+                      value={startDate}
+                      style={{ width: '150px' }}
+                      onChange={(e) => setStartDate(e.target.value)}
+                    />
+                  </Form.Group>
+
+                  <Form.Group className="mb-3" controlId="endDate">
+                    <Form.Label>End Date</Form.Label>
+                    <Form.Control
+                      type="date"
+                      value={endDate}
+                      style={{ width: '150px' }}
+                      onChange={(e) => setEndDate(e.target.value)}
+                    />
+                  </Form.Group>
+
+                  <Form.Group className="mb-3" controlId="reason">
+                    <Form.Label>Reason</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Reason for leave"
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
+                    />
+                  </Form.Group>
+
+                  <Button variant="primary" onClick={() => updatePost(id)}>
+                    Save Changes
+                  </Button>
+                </Form>
                 <Card.Link
                   onClick={() => deletePost(id)}
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer", color: "red", marginTop: "10px" }}
                 >
                   Delete
                 </Card.Link>
