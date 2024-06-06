@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Image, Nav, Navbar, Row } from "react-bootstrap";
+import { Container, Nav, Navbar, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
@@ -8,7 +8,7 @@ export default function PostPageHome() {
     const [posts, setPosts] = useState([]);
 
     async function getAllPosts() {
-        const query = await getDocs(collection(db, "leaveE"));
+        const query = await getDocs(collection(db, "leaveEntries"));
         const posts = query.docs.map((doc) => {
             return { id: doc.id, ...doc.data() };
         });
@@ -19,15 +19,15 @@ export default function PostPageHome() {
         getAllPosts();
     }, []);
 
-    const ImagesRow = () => {
-        return posts.map((post, index) => <ImageSquare key={index} post={post} />);
+    const PostsRow = () => {
+        return posts.map((post, index) => <PostDetail key={index} post={post} />);
     };
 
     return (
         <>
             <Navbar variant="light" bg="light">
                 <Container>
-                    <Navbar.Brand href="/">Tinkergram</Navbar.Brand>
+                    <Navbar.Brand href="/">MasterSkive</Navbar.Brand>
                     <Nav>
                         <Nav.Link href="/add">New Post</Nav.Link>
                     </Nav>
@@ -35,32 +35,26 @@ export default function PostPageHome() {
             </Navbar>
             <Container>
                 <Row>
-                    <ImagesRow />
+                    <PostsRow />
                 </Row>
             </Container>
         </>
     );
 }
 
-function ImageSquare({ post }) {
-    const { image, id } = post;
+function PostDetail({ post }) {
+    const { endDate, reason, startDate, timeStamp, userID } = post;
     return (
-        <Link
-            to={`post/${id}`}
-            style={{
-                width: "18rem",
-                marginLeft: "1rem",
-                marginTop: "2rem",
-            }}
-        >
-            <Image
-                src={image}
-                style={{
-                    objectFit: "cover",
-                    width: "18rem",
-                    height: "18rem",
-                }}
-            />
-        </Link>
+        <Col style={{ marginBottom: "2rem" }}>
+            <Link to={`post/${post.id}`} style={{ textDecoration: "none", color: "black" }}>
+                <div style={{ border: "1px solid #ccc", padding: "1rem", borderRadius: "5px" }}>
+                    <h5>User: {userID}</h5>
+                    <p><strong>Start Date:</strong> {new Date(startDate).toLocaleString()}</p>
+                    <p><strong>End Date:</strong> {new Date(endDate).toLocaleString()}</p>
+                    <p><strong>Reason:</strong> {reason}</p>
+                    <p><strong>Request Timestamp:</strong> {new Date(timeStamp).toLocaleString()}</p>
+                </div>
+            </Link>
+        </Col>
     );
 }
