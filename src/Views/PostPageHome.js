@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Container, Nav, Navbar, Row, Col } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import Navigation from "../Components/Navigation";
 
 export default function PostPageHome() {
     const [posts, setPosts] = useState([]);
@@ -25,14 +26,7 @@ export default function PostPageHome() {
 
     return (
         <>
-            <Navbar variant="light" bg="light">
-                <Container>
-                    <Navbar.Brand href="/">MasterSkive</Navbar.Brand>
-                    <Nav>
-                        <Nav.Link href="/add">New Post</Nav.Link>
-                    </Nav>
-                </Container>
-            </Navbar>
+            <Navigation />
             <Container>
                 <Row>
                     <PostsRow />

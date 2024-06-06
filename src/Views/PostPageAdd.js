@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, Form, Nav, Navbar, Alert } from "react-bootstrap";
+import { Button, Container, Form, Alert } from "react-bootstrap";
 import { addDoc, collection } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase";
-import { signOut } from "firebase/auth";
+import Navigation from "../Components/Navigation";
 
 export default function PostPageAdd() {
   const [user, loading] = useAuthState(auth);
@@ -37,15 +37,7 @@ export default function PostPageAdd() {
 
   return (
     <>
-      <Navbar variant="light" bg="light">
-        <Container>
-          <Navbar.Brand href="/">MasterSkive</Navbar.Brand>
-          <Nav>
-            <Nav.Link href="/add">New Leave Request</Nav.Link>
-            <Nav.Link onClick={(e) => signOut(auth)}>🚪</Nav.Link>
-          </Nav>
-        </Container>
-      </Navbar>
+      <Navigation />
       <Container>
         <h1 style={{ marginBlock: "1rem" }}>Add Leave Request</h1>
         <Form>

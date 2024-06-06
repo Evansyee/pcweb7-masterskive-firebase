@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Col, Container, Form, Nav, Navbar, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../firebase";
-import { signOut } from "firebase/auth";
 import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import Navigation from "../Components/Navigation";
 
 export default function PostPageDetails() {
   const [userID, setUserID] = useState("");
@@ -56,15 +56,7 @@ export default function PostPageDetails() {
 
   return (
     <>
-      <Navbar variant="light" bg="light">
-        <Container>
-          <Navbar.Brand href="/">MasterSkive</Navbar.Brand>
-          <Nav>
-            <Nav.Link href="/add">New Leave Request</Nav.Link>
-            <Nav.Link onClick={(e) => signOut(auth)}>🚪</Nav.Link>
-          </Nav>
-        </Container>
-      </Navbar>
+      <Navigation />
       <Container>
         <Row style={{ marginTop: "2rem" }}>
           <Col>
