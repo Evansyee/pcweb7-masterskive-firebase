@@ -11,22 +11,15 @@ export default function PostPageHome() {
     async function getAllPosts() {
         const query = await getDocs(collection(db, "leaveEntries"));
         const filteredPosts = query.docs.filter(doc => {
-            const data = doc.data()
-            const startDate = new Date(data.startDate)
-            startDate.setHours(0, 0, 0, 0)
-            const endDate = new Date(data.endDate)
-            endDate.setHours(23, 59, 59, 99)
-            console.log(data.reason)
-            console.log(startDate)
-            console.log(endDate)
-            console.log(Date())
-            if (Date() >= startDate && Date() <= endDate)
-                console.log("yes")
-            return (Date() >= startDate && Date() <= endDate)
-        })
-        // const posts = query.docs.map((doc) => {
-        //     return { id: doc.id, ...doc.data() };
-        // });
+            const data = doc.data();
+            const startDate = new Date(data.startDate);
+            startDate.setHours(0, 0, 0, 0);
+            const endDate = new Date(data.endDate);
+            endDate.setHours(23, 59, 59, 999);  // Use 999 for milliseconds for the end of the day
+            const currentDate = new Date();
+            return currentDate >= startDate && currentDate <= endDate;
+        }).map(doc => ({ id: doc.id, ...doc.data() })); // Map to include document ID and data
+
         setPosts(filteredPosts);
     }
 
