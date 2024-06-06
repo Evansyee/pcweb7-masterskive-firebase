@@ -42,6 +42,7 @@ export default function PostPageAdd() {
         <h1 style={{ marginBlock: "1rem" }}>Add Leave Request</h1>
         <Form>
           {error && <Alert variant="danger">{error}</Alert>}
+
           <Form.Group className="mb-3" controlId="userName">
             <Form.Label>User Name</Form.Label>
             <Form.Control
