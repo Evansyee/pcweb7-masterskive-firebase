@@ -43,8 +43,8 @@ function PostDetail({ post }) {
             <Link to={`post/${post.id}`} style={{ textDecoration: "none", color: "black" }}>
                 <div style={{ border: "1px solid #ccc", padding: "1rem", borderRadius: "5px" }}>
                     <h5>User: {userID}</h5>
-                    <p><strong>Start Date:</strong> {new Date(startDate).toLocaleString()}</p>
-                    <p><strong>End Date:</strong> {new Date(endDate).toLocaleString()}</p>
+                    <p><strong>Start Date:</strong> {new Date(startDate).toLocaleDateString()}</p>
+                    <p><strong>End Date:</strong> {new Date(endDate).toLocaleDateString()}</p>
                     <p><strong>Reason:</strong> {reason}</p>
                     <p><strong>Request Timestamp:</strong> {new Date(timeStamp).toLocaleString()}</p>
                 </div>
