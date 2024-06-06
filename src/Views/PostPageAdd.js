@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, Form, Nav, Navbar } from "react-bootstrap";
+import { Button, Container, Form, Nav, Navbar, Alert } from "react-bootstrap";
 import { addDoc, collection } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
@@ -8,12 +8,25 @@ import { signOut } from "firebase/auth";
 
 export default function PostPageAdd() {
   const [user, loading] = useAuthState(auth);
-  const [caption, setCaption] = useState("");
-  const [image, setImage] = useState("");
+  const [userID, setUserID] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [reason, setReason] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   async function addPost() {
-    await addDoc(collection(db, "leaveEntries"), { caption, image });
+    if (new Date(endDate) < new Date(startDate)) {
+      setError("End date must be the same or later than the start date.");
+      return;
+    }
+    await addDoc(collection(db, "leaveEntries"), {
+      userID,
+      startDate,
+      endDate,
+      reason,
+      timeStamp: new Date().toISOString(),
+    });
     navigate("/");
   }
 
@@ -26,39 +39,58 @@ export default function PostPageAdd() {
     <>
       <Navbar variant="light" bg="light">
         <Container>
-          <Navbar.Brand href="/">Tinkergram</Navbar.Brand>
+          <Navbar.Brand href="/">MasterSkive</Navbar.Brand>
           <Nav>
-            <Nav.Link href="/add">New Post</Nav.Link>
-            <Nav.Link onClick={(e) => signOut(auth)} >🚪</Nav.Link>
+            <Nav.Link href="/add">New Leave Request</Nav.Link>
+            <Nav.Link onClick={(e) => signOut(auth)}>🚪</Nav.Link>
           </Nav>
         </Container>
       </Navbar>
       <Container>
-        <h1 style={{ marginBlock: "1rem" }}>Add Post</h1>
+        <h1 style={{ marginBlock: "1rem" }}>Add Leave Request</h1>
         <Form>
-          <Form.Group className="mb-3" controlId="caption">
-            <Form.Label>Caption</Form.Label>
+          {error && <Alert variant="danger">{error}</Alert>}
+          <Form.Group className="mb-3" controlId="userName">
+            <Form.Label>User Name</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Lovely day"
-              value={caption}
-              onChange={(text) => setCaption(text.target.value)}
+              placeholder="Enter your name"
+              value={userID}
+              onChange={(e) => setUserID(e.target.value)}
             />
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="image">
-            <Form.Label>Image URL</Form.Label>
+          <Form.Group className="mb-3" controlId="startDate">
+            <Form.Label>Start Date</Form.Label>
+            <Form.Control
+              type="date"
+              value={startDate}
+              style={{ width: '150px' }}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="endDate">
+            <Form.Label>End Date</Form.Label>
+            <Form.Control
+              type="date"
+              value={endDate}
+              style={{ width: '150px' }}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="reason">
+            <Form.Label>Reason</Form.Label>
             <Form.Control
               type="text"
-              placeholder="https://zca.sg/img/1"
-              value={image}
-              onChange={(text) => setImage(text.target.value)}
+              placeholder="Reason for leave"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
             />
-            <Form.Text className="text-muted">
-              Make sure the url has a image type at the end: jpg, jpeg, png.
-            </Form.Text>
           </Form.Group>
-          <Button variant="primary" onClick={async (e) => addPost()}>
+
+          <Button variant="primary" onClick={addPost}>
             Submit
           </Button>
         </Form>
