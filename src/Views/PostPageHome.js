@@ -10,10 +10,24 @@ export default function PostPageHome() {
 
     async function getAllPosts() {
         const query = await getDocs(collection(db, "leaveEntries"));
-        const posts = query.docs.map((doc) => {
-            return { id: doc.id, ...doc.data() };
-        });
-        setPosts(posts);
+        const filteredPosts = query.docs.filter(doc => {
+            const data = doc.data()
+            const startDate = new Date(data.startDate)
+            startDate.setHours(0, 0, 0, 0)
+            const endDate = new Date(data.endDate)
+            endDate.setHours(23, 59, 59, 99)
+            console.log(data.reason)
+            console.log(startDate)
+            console.log(endDate)
+            console.log(Date())
+            if (Date() >= startDate && Date() <= endDate)
+                console.log("yes")
+            return (Date() >= startDate && Date() <= endDate)
+        })
+        // const posts = query.docs.map((doc) => {
+        //     return { id: doc.id, ...doc.data() };
+        // });
+        setPosts(filteredPosts);
     }
 
     useEffect(() => {
